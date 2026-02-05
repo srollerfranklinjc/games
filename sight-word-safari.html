@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sight Word Safari - Sloane's Learning Adventure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Arial Rounded MT Bold', cursive, sans-serif;
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .game-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            color: #11998e;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .score-item {
+            background: #f0f9ff;
+            padding: 10px 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .score-label {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .score-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #11998e;
+        }
+
+        .game-area {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 30px;
+            min-height: 500px;
+            position: relative;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .instruction {
+            text-align: center;
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 30px;
+            padding: 15px;
+            background: #fff3cd;
+            border-radius: 15px;
+            border: 3px solid #ffc107;
+        }
+
+        .target-word {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #11998e;
+        }
+
+        .animals-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .animal-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border: 3px solid transparent;
+        }
+
+        .animal-card:hover {
+            transform: translateY(-10px) scale(1.05);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        .animal-card.correct {
+            animation: correct-bounce 0.6s;
+            pointer-events: none;
+        }
+
+        .animal-card.incorrect {
+            animation: shake 0.5s;
+        }
+
+        @keyframes correct-bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .animal-emoji {
+            font-size: 4em;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .animal-word {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #333;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .feedback {
+            text-align: center;
+            font-size: 1.8em;
+            font-weight: bold;
+            min-height: 50px;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 15px;
+        }
+
+        .feedback.correct {
+            color: #28a745;
+            background: #d4edda;
+        }
+
+        .feedback.incorrect {
+            color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .next-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.3em;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            display: none;
+            margin: 20px auto;
+            transition: all 0.3s;
+        }
+
+        .next-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .next-button.show {
+            display: block;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: confetti-fall 3s linear;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .level-complete {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            text-align: center;
+            z-index: 1001;
+            transition: transform 0.3s;
+            max-width: 90%;
+        }
+
+        .level-complete.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .level-complete h2 {
+            color: #11998e;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .level-complete .stars {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        .btn-home {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            font-size: 1.2em;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-home:hover {
+            transform: translateY(-3px);
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .animal-emoji {
+                font-size: 3em;
+            }
+
+            .animal-word {
+                font-size: 1.4em;
+            }
+
+            .target-word {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>🦁 Sight Word Safari 🦁</h1>
+            <p>Catch the animals with the right sight word!</p>
+            
+            <div class="score-board">
+                <div class="score-item">
+                    <div class="score-label">Round</div>
+                    <div class="score-value" id="round">1</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">Caught</div>
+                    <div class="score-value" id="caught">0</div>
+                </div>
+                <div class="score-item">
+                    <div class="score-label">Streak</div>
+                    <div class="score-value" id="streak">0🔥</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-area">
+            <div class="instruction">
+                Click the animal with the word: <span class="target-word" id="target-word">the</span>
+            </div>
+
+            <div class="animals-container" id="animals-container">
+                <!-- Animals will be dynamically added here -->
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+            
+            <button class="next-button" id="next-button" onclick="nextRound()">Next Animal! →</button>
+        </div>
+    </div>
+
+    <div class="celebration" id="celebration"></div>
+
+    <script>
+        // Kindergarten and Grade 1 sight words
+        const sightWords = {
+            kindergarten: ['the', 'and', 'a', 'to', 'said', 'you', 'I', 'of', 'in', 'was', 'is', 'he', 'for', 'it', 'with', 'as', 'his', 'on', 'be', 'at', 'by', 'we', 'can', 'see', 'like', 'go', 'do', 'my', 'are', 'me'],
+            grade1: ['they', 'were', 'have', 'what', 'when', 'your', 'said', 'there', 'use', 'each', 'which', 'she', 'how', 'their', 'if', 'will', 'up', 'other', 'about', 'out', 'many', 'then', 'them', 'these', 'so', 'some', 'her', 'would', 'make', 'him']
+        };
+
+        const animals = ['🦁', '🐯', '🐻', '🐼', '🐨', '🦊', '🐸', '🐵', '🦓', '🦒', '🐘', '🦏', '🦘', '🦙', '🐫', '🦌', '🐆', '🦝'];
+
+        let currentRound = 1;
+        let caughtCount = 0;
+        let streak = 0;
+        let currentTarget = '';
+        let usedWords = new Set();
+        let maxRounds = 20;
+
+        function initGame() {
+            loadRound();
+        }
+
+        function loadRound() {
+            if (currentRound > maxRounds) {
+                showGameComplete();
+                return;
+            }
+
+            // Get available words
+            let availableWords = [...sightWords.kindergarten, ...sightWords.grade1];
+            availableWords = availableWords.filter(word => !usedWords.has(word));
+            
+            if (availableWords.length < 4) {
+                usedWords.clear();
+                availableWords = [...sightWords.kindergarten, ...sightWords.grade1];
+            }
+
+            // Select target word
+            currentTarget = availableWords[Math.floor(Math.random() * availableWords.length)];
+            usedWords.add(currentTarget);
+            document.getElementById('target-word').textContent = currentTarget;
+
+            // Select 3 other random words
+            let otherWords = availableWords.filter(w => w !== currentTarget);
+            otherWords.sort(() => Math.random() - 0.5);
+            let displayWords = [currentTarget, ...otherWords.slice(0, 3)];
+            
+            // Shuffle display words
+            displayWords.sort(() => Math.random() - 0.5);
+
+            // Create animal cards
+            const container = document.getElementById('animals-container');
+            container.innerHTML = '';
+
+            displayWords.forEach((word, index) => {
+                const card = document.createElement('div');
+                card.className = 'animal-card';
+                card.innerHTML = `
+                    <span class="animal-emoji">${animals[Math.floor(Math.random() * animals.length)]}</span>
+                    <div class="animal-word">${word}</div>
+                `;
+                card.onclick = () => checkAnswer(word, card);
+                container.appendChild(card);
+            });
+
+            // Clear feedback and hide next button
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('next-button').classList.remove('show');
+        }
+
+        function checkAnswer(selectedWord, card) {
+            const feedback = document.getElementById('feedback');
+            const allCards = document.querySelectorAll('.animal-card');
+            
+            // Disable all cards
+            allCards.forEach(c => c.style.pointerEvents = 'none');
+
+            if (selectedWord === currentTarget) {
+                // Correct!
+                card.classList.add('correct');
+                feedback.textContent = `🎉 Perfect! You caught the animal with "${currentTarget}"!`;
+                feedback.className = 'feedback correct';
+                
+                caughtCount++;
+                streak++;
+                celebrate();
+                
+                setTimeout(() => {
+                    document.getElementById('next-button').classList.add('show');
+                }, 1000);
+            } else {
+                // Incorrect
+                card.classList.add('incorrect');
+                feedback.textContent = `Not quite! Look for "${currentTarget}"`;
+                feedback.className = 'feedback incorrect';
+                
+                streak = 0;
+                
+                // Re-enable cards after shake
+                setTimeout(() => {
+                    card.classList.remove('incorrect');
+                    allCards.forEach(c => c.style.pointerEvents = 'auto');
+                }, 500);
+            }
+
+            updateScore();
+        }
+
+        function nextRound() {
+            currentRound++;
+            updateScore();
+            loadRound();
+        }
+
+        function updateScore() {
+            document.getElementById('round').textContent = currentRound;
+            document.getElementById('caught').textContent = caughtCount;
+            document.getElementById('streak').textContent = streak > 0 ? streak + '🔥' : '0';
+        }
+
+        function celebrate() {
+            const celebration = document.getElementById('celebration');
+            
+            // Create confetti
+            for (let i = 0; i < 30; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.background = ['#f39c12', '#e74c3c', '#3498db', '#2ecc71', '#9b59b6'][Math.floor(Math.random() * 5)];
+                confetti.style.animationDelay = Math.random() * 0.3 + 's';
+                celebration.appendChild(confetti);
+                
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+
+        function showGameComplete() {
+            const accuracy = Math.round((caughtCount / maxRounds) * 100);
+            let message = '';
+            let stars = '';
+
+            if (accuracy >= 90) {
+                message = 'Outstanding Safari Expert!';
+                stars = '⭐⭐⭐⭐⭐';
+            } else if (accuracy >= 75) {
+                message = 'Great Safari Adventure!';
+                stars = '⭐⭐⭐⭐';
+            } else if (accuracy >= 60) {
+                message = 'Good Safari Trip!';
+                stars = '⭐⭐⭐';
+            } else {
+                message = 'Keep Practicing!';
+                stars = '⭐⭐';
+            }
+
+            const completeDiv = document.createElement('div');
+            completeDiv.className = 'level-complete';
+            completeDiv.innerHTML = `
+                <h2>🎊 Safari Complete! 🎊</h2>
+                <div class="stars">${stars}</div>
+                <p style="font-size: 1.5em; margin-bottom: 15px;">${message}</p>
+                <p style="font-size: 1.3em; margin-bottom: 20px;">You caught ${caughtCount} out of ${maxRounds} animals!</p>
+                <p style="font-size: 1.2em; color: #666; margin-bottom: 25px;">Accuracy: ${accuracy}%</p>
+                <button class="btn-home" onclick="location.reload()">Play Again!</button>
+                <a href="index.html" class="btn-home">Back to Games</a>
+            `;
+            document.body.appendChild(completeDiv);
+            
+            setTimeout(() => {
+                completeDiv.classList.add('show');
+            }, 100);
+            
+            celebrate();
+        }
+
+        // Start the game
+        initGame();
+    </script>
+</body>
+</html>

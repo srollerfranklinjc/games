@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shape Detective - Sloane's Learning Adventure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Arial Rounded MT Bold', cursive, sans-serif;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .game-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            color: #0984e3;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .detective-badge {
+            display: inline-block;
+            font-size: 3em;
+            margin: 10px 0;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .stat-item {
+            background: #e3f2fd;
+            padding: 10px 20px;
+            border-radius: 15px;
+            text-align: center;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #0984e3;
+        }
+
+        .game-area {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .mission {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border: 3px solid #f39c12;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .mission-title {
+            font-size: 1.3em;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .target-shape {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #0984e3;
+            margin-bottom: 10px;
+        }
+
+        .shape-hint {
+            font-size: 1.2em;
+            color: #666;
+            font-style: italic;
+        }
+
+        .scene {
+            background: linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%);
+            border-radius: 20px;
+            padding: 40px;
+            min-height: 400px;
+            margin-bottom: 25px;
+            position: relative;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 25px;
+        }
+
+        .shape-item {
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .shape-item:hover {
+            transform: scale(1.1);
+        }
+
+        .shape-item.found {
+            animation: found-pulse 0.6s;
+            pointer-events: none;
+        }
+
+        .shape-item.wrong {
+            animation: shake 0.5s;
+        }
+
+        @keyframes found-pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        .check-mark {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 2em;
+            display: none;
+        }
+
+        .shape-item.found .check-mark {
+            display: block;
+            animation: check-pop 0.3s;
+        }
+
+        @keyframes check-pop {
+            from { transform: scale(0); }
+            to { transform: scale(1); }
+        }
+
+        .feedback {
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            min-height: 60px;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .feedback.correct {
+            color: #27ae60;
+            background: #e8f5e9;
+        }
+
+        .feedback.incorrect {
+            color: #e74c3c;
+            background: #ffebee;
+        }
+
+        .progress-bar {
+            background: #ecf0f1;
+            border-radius: 15px;
+            height: 30px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+            height: 100%;
+            transition: width 0.5s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.3em;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            display: none;
+            margin: 0 auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn-next.show {
+            display: block;
+        }
+
+        .btn-next:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            animation: confetti-fall 3s linear;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .game-complete {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            text-align: center;
+            z-index: 1001;
+            transition: transform 0.3s;
+            max-width: 90%;
+        }
+
+        .game-complete.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .game-complete h2 {
+            color: #0984e3;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .btn-home {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            font-size: 1.2em;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 10px;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        /* SVG Shapes */
+        svg {
+            display: block;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .target-shape {
+                font-size: 2em;
+            }
+
+            .scene {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>🔍 Shape Detective 🔍</h1>
+            <div class="detective-badge">🕵️</div>
+            <p>Find all the shapes that match!</p>
+            
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-label">Case</div>
+                    <div class="stat-value" id="case-num">1</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Solved</div>
+                    <div class="stat-value" id="solved">0</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-label">Found</div>
+                    <div class="stat-value" id="found-count">0/0</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-area">
+            <div class="mission">
+                <div class="mission-title">🎯 Detective Mission:</div>
+                <div class="target-shape" id="target-shape">Find all CIRCLES</div>
+                <div class="shape-hint" id="shape-hint">Round shapes with no corners</div>
+            </div>
+
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill" style="width: 0%;">0%</div>
+            </div>
+
+            <div class="scene" id="scene">
+                <!-- Shapes will be generated here -->
+            </div>
+
+            <div class="feedback" id="feedback"></div>
+
+            <button class="btn-next" id="next-btn" onclick="nextCase()">Next Case! →</button>
+        </div>
+    </div>
+
+    <div class="celebration" id="celebration"></div>
+
+    <script>
+        const missions = [
+            {
+                target: 'CIRCLES',
+                hint: 'Round shapes with no corners',
+                targetCount: 4,
+                colors: ['#e74c3c', '#3498db', '#f39c12', '#2ecc71', '#9b59b6']
+            },
+            {
+                target: 'SQUARES',
+                hint: '4 equal sides and 4 corners',
+                targetCount: 4,
+                colors: ['#e67e22', '#1abc9c', '#e91e63', '#00bcd4', '#ff5722']
+            },
+            {
+                target: 'TRIANGLES',
+                hint: '3 sides and 3 corners',
+                targetCount: 4,
+                colors: ['#9c27b0', '#4caf50', '#ff9800', '#2196f3', '#f44336']
+            },
+            {
+                target: 'RECTANGLES',
+                hint: '4 sides with opposite sides equal',
+                targetCount: 3,
+                colors: ['#795548', '#607d8b', '#009688', '#8bc34a', '#cddc39']
+            },
+            {
+                target: 'STARS',
+                hint: 'Shapes with 5 points',
+                targetCount: 3,
+                colors: ['#ffd700', '#ffa500', '#ff6347', '#ff1493', '#00ced1']
+            },
+            {
+                target: 'HEXAGONS',
+                hint: '6 sides and 6 corners',
+                targetCount: 3,
+                colors: ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#dfe6e9']
+            }
+        ];
+
+        let currentCase = 0;
+        let casesSolved = 0;
+        let shapesFound = 0;
+        let totalShapesToFind = 0;
+
+        function initGame() {
+            loadCase();
+        }
+
+        function loadCase() {
+            if (currentCase >= missions.length) {
+                showGameComplete();
+                return;
+            }
+
+            const mission = missions[currentCase];
+            shapesFound = 0;
+            totalShapesToFind = mission.targetCount;
+
+            document.getElementById('target-shape').textContent = `Find all ${mission.target}`;
+            document.getElementById('shape-hint').textContent = mission.hint;
+            document.getElementById('found-count').textContent = `${shapesFound}/${totalShapesToFind}`;
+
+            generateScene(mission);
+
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('feedback').className = 'feedback';
+            document.getElementById('next-btn').classList.remove('show');
+            updateProgress();
+        }
+
+        function generateScene(mission) {
+            const scene = document.getElementById('scene');
+            scene.innerHTML = '';
+
+            const shapes = [];
+
+            // Add target shapes
+            for (let i = 0; i < mission.targetCount; i++) {
+                shapes.push({
+                    type: mission.target,
+                    isTarget: true,
+                    color: mission.colors[i % mission.colors.length]
+                });
+            }
+
+            // Add other shapes
+            const otherShapes = ['CIRCLES', 'SQUARES', 'TRIANGLES', 'RECTANGLES', 'STARS', 'HEXAGONS']
+                .filter(s => s !== mission.target);
+            
+            for (let i = 0; i < 5; i++) {
+                const randomShape = otherShapes[Math.floor(Math.random() * otherShapes.length)];
+                shapes.push({
+                    type: randomShape,
+                    isTarget: false,
+                    color: mission.colors[Math.floor(Math.random() * mission.colors.length)]
+                });
+            }
+
+            // Shuffle shapes
+            shapes.sort(() => Math.random() - 0.5);
+
+            // Create shape elements
+            shapes.forEach((shape, index) => {
+                const container = document.createElement('div');
+                container.className = 'shape-item';
+                container.innerHTML = createShapeSVG(shape.type, shape.color) + '<span class="check-mark">✓</span>';
+                container.onclick = () => checkShape(container, shape.isTarget);
+                scene.appendChild(container);
+            });
+        }
+
+        function createShapeSVG(type, color) {
+            const size = 80;
+            let svg = '';
+
+            switch(type) {
+                case 'CIRCLES':
+                    svg = `<svg width="${size}" height="${size}">
+                        <circle cx="${size/2}" cy="${size/2}" r="${size/2 - 5}" fill="${color}" stroke="#333" stroke-width="3"/>
+                    </svg>`;
+                    break;
+                case 'SQUARES':
+                    svg = `<svg width="${size}" height="${size}">
+                        <rect x="5" y="5" width="${size - 10}" height="${size - 10}" fill="${color}" stroke="#333" stroke-width="3"/>
+                    </svg>`;
+                    break;
+                case 'TRIANGLES':
+                    svg = `<svg width="${size}" height="${size}">
+                        <polygon points="${size/2},10 ${size - 10},${size - 10} 10,${size - 10}" fill="${color}" stroke="#333" stroke-width="3"/>
+                    </svg>`;
+                    break;
+                case 'RECTANGLES':
+                    svg = `<svg width="${size + 20}" height="${size}">
+                        <rect x="5" y="15" width="${size + 10}" height="${size - 30}" fill="${color}" stroke="#333" stroke-width="3"/>
+                    </svg>`;
+                    break;
+                case 'STARS':
+                    svg = `<svg width="${size}" height="${size}">
+                        <polygon points="${size/2},5 ${size/2 + 8},${size/2 - 5} ${size - 5},${size/2} ${size/2 + 8},${size/2 + 8} ${size/2 + 15},${size - 5} ${size/2},${size/2 + 15} ${size/2 - 15},${size - 5} ${size/2 - 8},${size/2 + 8} 5,${size/2} ${size/2 - 8},${size/2 - 5}" 
+                        fill="${color}" stroke="#333" stroke-width="3"/>
+                    </svg>`;
+                    break;
+                case 'HEXAGONS':
+                    const h = size * 0.866;
+                    svg = `<svg width="${size}" height="${size}">
+                        <polygon points="${size/2},5 ${size - 10},${h/4 + 5} ${size - 10},${3*h/4 + 5} ${size/2},${h + 5} 10,${3*h/4 + 5} 10,${h/4 + 5}" 
+                        fill="${color}" stroke="#333" stroke-width="3"/>
+                    </svg>`;
+                    break;
+            }
+
+            return svg;
+        }
+
+        function checkShape(element, isTarget) {
+            const feedback = document.getElementById('feedback');
+
+            if (isTarget) {
+                element.classList.add('found');
+                shapesFound++;
+                
+                feedback.textContent = `✨ Great detective work! That's a ${missions[currentCase].target.slice(0, -1)}!`;
+                feedback.className = 'feedback correct';
+
+                updateProgress();
+
+                if (shapesFound === totalShapesToFind) {
+                    casesSolved++;
+                    celebrate();
+                    
+                    setTimeout(() => {
+                        feedback.textContent = `🎉 Case solved! You found all ${totalShapesToFind} ${missions[currentCase].target}!`;
+                        document.getElementById('next-btn').classList.add('show');
+                    }, 1000);
+                }
+
+                document.getElementById('found-count').textContent = `${shapesFound}/${totalShapesToFind}`;
+                updateStats();
+            } else {
+                element.classList.add('wrong');
+                feedback.textContent = `Not quite! That's not a ${missions[currentCase].target.slice(0, -1)}. Keep looking!`;
+                feedback.className = 'feedback incorrect';
+
+                setTimeout(() => {
+                    element.classList.remove('wrong');
+                }, 500);
+            }
+        }
+
+        function updateProgress() {
+            const percentage = (shapesFound / totalShapesToFind) * 100;
+            const fill = document.getElementById('progress-fill');
+            fill.style.width = percentage + '%';
+            fill.textContent = Math.round(percentage) + '%';
+        }
+
+        function updateStats() {
+            document.getElementById('case-num').textContent = currentCase + 1;
+            document.getElementById('solved').textContent = casesSolved;
+        }
+
+        function nextCase() {
+            currentCase++;
+            updateStats();
+            loadCase();
+        }
+
+        function celebrate() {
+            const celebration = document.getElementById('celebration');
+            
+            for (let i = 0; i < 40; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.background = ['#f39c12', '#e74c3c', '#3498db', '#2ecc71', '#9b59b6', '#1abc9c'][Math.floor(Math.random() * 6)];
+                confetti.style.animationDelay = Math.random() * 0.3 + 's';
+                celebration.appendChild(confetti);
+                
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+
+        function showGameComplete() {
+            const completeDiv = document.createElement('div');
+            completeDiv.className = 'game-complete';
+            completeDiv.innerHTML = `
+                <h2>🎊 All Cases Solved! 🎊</h2>
+                <div style="font-size: 4em; margin: 20px 0;">🕵️🔍🏆</div>
+                <div style="font-size: 3em; margin-bottom: 20px;">⭐⭐⭐⭐⭐</div>
+                <p style="font-size: 1.8em; margin-bottom: 15px;">Master Shape Detective!</p>
+                <p style="font-size: 1.3em; color: #666; margin-bottom: 25px;">You solved all ${casesSolved} cases!</p>
+                <button class="btn-home" onclick="location.reload()">Solve Again!</button>
+                <a href="index.html" class="btn-home">Back to Games</a>
+            `;
+            document.body.appendChild(completeDiv);
+            
+            setTimeout(() => {
+                completeDiv.classList.add('show');
+            }, 100);
+            
+            celebrate();
+        }
+
+        // Start the game
+        initGame();
+    </script>
+</body>
+</html>
