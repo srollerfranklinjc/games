@@ -235,6 +235,37 @@
             display: inline-block;
         }
 
+        .hint-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border: 3px solid #f5576c;
+            border-radius: 12px;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            color: #f5576c;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+
+        .hint-toggle:hover {
+            background: #f5576c;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .word-example.hidden {
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+            margin: 0;
+            transition: all 0.3s;
+        }
+
         .celebration {
             position: fixed;
             top: 0;
@@ -323,6 +354,9 @@
 
         <div class="game-area">
             <div class="challenge">
+                <button class="hint-toggle" onclick="toggleHint()">
+                    💡 <span id="hint-toggle-text">Hide</span> Hints
+                </button>
                 <div class="challenge-title">Find ALL pictures with the word family:</div>
                 <div class="word-family" id="word-family">-at</div>
                 <div class="word-example" id="word-example">(like "cat" or "hat")</div>
@@ -463,6 +497,21 @@
         let treasuresFound = 0;
         let currentCorrectFound = 0;
         let totalCorrectNeeded = 0;
+        let hintsVisible = true;
+
+        function toggleHint() {
+            hintsVisible = !hintsVisible;
+            const wordExample = document.getElementById('word-example');
+            const toggleText = document.getElementById('hint-toggle-text');
+            
+            if (hintsVisible) {
+                wordExample.classList.remove('hidden');
+                toggleText.textContent = 'Hide';
+            } else {
+                wordExample.classList.add('hidden');
+                toggleText.textContent = 'Show';
+            }
+        }
 
         function initGame() {
             loadChallenge();
@@ -480,6 +529,14 @@
 
             document.getElementById('word-family').textContent = challenge.family;
             document.getElementById('word-example').textContent = challenge.example;
+            
+            // Maintain hint visibility state
+            const wordExample = document.getElementById('word-example');
+            if (!hintsVisible) {
+                wordExample.classList.add('hidden');
+            } else {
+                wordExample.classList.remove('hidden');
+            }
 
             // Combine and shuffle pictures
             const allPictures = [...challenge.correct, ...challenge.incorrect];
