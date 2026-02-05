@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sloane's Learning Adventure</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Arial Rounded MT Bold', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 30px;
+            background: white;
+            border-radius: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            font-size: 3em;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.3em;
+            color: #666;
+        }
+
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+
+        .game-card.active {
+            border: 3px solid #4caf50;
+        }
+
+        .game-card.coming-soon {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .game-card.coming-soon:hover {
+            transform: none;
+        }
+
+        .game-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+        }
+
+        .game-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .game-description {
+            color: #666;
+            font-size: 1em;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .game-badge {
+            display: inline-block;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .badge-reading {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .badge-math {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .badge-both {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+
+        .badge-coming {
+            background: #ddd;
+            color: #666;
+        }
+
+        .category-section {
+            margin-bottom: 50px;
+        }
+
+        .category-header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .category-header h2 {
+            font-size: 2em;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .category-header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .footer {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            margin-top: 40px;
+        }
+
+        .footer p {
+            color: #666;
+            font-size: 1em;
+        }
+
+        .play-button {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: bold;
+            font-size: 1.1em;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .header p {
+                font-size: 1em;
+            }
+            
+            .game-icon {
+                font-size: 3.5em;
+            }
+            
+            .game-title {
+                font-size: 1.4em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌟 Sloane's Learning Adventure 🌟</h1>
+            <p>Fun games to practice reading and math!</p>
+        </div>
+
+        <!-- Reading Games Section -->
+        <div class="category-section">
+            <div class="category-header">
+                <h2>📚 Reading Games</h2>
+                <p>Practice phonics, sight words, and vocabulary</p>
+            </div>
+            
+            <div class="games-grid">
+                <a href="blend-builder-adventure.html" class="game-card active">
+                    <div class="game-icon">🐸</div>
+                    <div class="game-title">Blend Builder Adventure</div>
+                    <div class="game-description">
+                        Build words with consonant blends! Practice fr, st, pl, cr, and more. Drag letters to create words and earn stars!
+                    </div>
+                    <span class="game-badge badge-reading">PHONICS</span>
+                    <div class="play-button">▶ Play Now!</div>
+                </a>
+
+                <div class="game-card coming-soon">
+                    <div class="game-icon">🦁</div>
+                    <div class="game-title">Sight Word Safari</div>
+                    <div class="game-description">
+                        Catch animals by clicking the correct sight words. Practice high-frequency words in a fun adventure!
+                    </div>
+                    <span class="game-badge badge-coming">COMING SOON</span>
+                </div>
+
+                <div class="game-card coming-soon">
+                    <div class="game-icon">🏴‍☠️</div>
+                    <div class="game-title">Phonics Treasure Hunt</div>
+                    <div class="game-description">
+                        Match sounds to pictures and collect treasures. Practice long vowels and word families!
+                    </div>
+                    <span class="game-badge badge-coming">COMING SOON</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Math Games Section -->
+        <div class="category-section">
+            <div class="category-header">
+                <h2>🔢 Math Games</h2>
+                <p>Practice counting, addition, shapes, and more</p>
+            </div>
+            
+            <div class="games-grid">
+                <div class="game-card coming-soon">
+                    <div class="game-icon">🌸</div>
+                    <div class="game-title">Addition Garden</div>
+                    <div class="game-description">
+                        Solve addition problems to plant flowers and watch your garden grow. Practice addition within 10!
+                    </div>
+                    <span class="game-badge badge-coming">COMING SOON</span>
+                </div>
+
+                <div class="game-card coming-soon">
+                    <div class="game-icon">🔍</div>
+                    <div class="game-title">Shape Detective</div>
+                    <div class="game-description">
+                        Find shapes with specific attributes in fun scenes. Practice identifying 2D and 3D shapes!
+                    </div>
+                    <span class="game-badge badge-coming">COMING SOON</span>
+                </div>
+
+                <div class="game-card coming-soon">
+                    <div class="game-icon">🚀</div>
+                    <div class="game-title">Counting Rocket</div>
+                    <div class="game-description">
+                        Count objects to fuel your rocket and blast off to space! Practice counting forward and backward.
+                    </div>
+                    <span class="game-badge badge-coming">COMING SOON</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Combined Learning Section -->
+        <div class="category-section">
+            <div class="category-header">
+                <h2>🌈 Mixed Learning</h2>
+                <p>Games that combine reading and math skills</p>
+            </div>
+            
+            <div class="games-grid">
+                <div class="game-card coming-soon">
+                    <div class="game-icon">🗺️</div>
+                    <div class="game-title">Learning Quest</div>
+                    <div class="game-description">
+                        Embark on an adventure with reading and math challenges. Earn stars and unlock new worlds!
+                    </div>
+                    <span class="game-badge badge-both">READING & MATH</span>
+                    <span class="game-badge badge-coming">COMING SOON</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Made with ❤️ for Sloane's learning journey</p>
+            <p style="margin-top: 10px; font-size: 0.9em;">Have fun learning and growing! 🌟</p>
+        </div>
+    </div>
+</body>
+</html>
