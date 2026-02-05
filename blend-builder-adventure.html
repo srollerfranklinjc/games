@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blend Builder Adventure - Sloane's Phonics Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Arial Rounded MT Bold', cursive, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 30px;
+            padding: 30px;
+            max-width: 900px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .score-board {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 20px;
+            background: #f0f4ff;
+            padding: 15px;
+            border-radius: 15px;
+        }
+
+        .score-item {
+            text-align: center;
+        }
+
+        .score-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .score-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stars {
+            font-size: 1.5em;
+        }
+
+        .challenge-area {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .challenge-text {
+            font-size: 1.5em;
+            color: #2d3436;
+            margin-bottom: 15px;
+        }
+
+        .target-image {
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 15px;
+            background: white;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5em;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .word-builder {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            border: 3px dashed #667eea;
+        }
+
+        .letter-slot {
+            width: 80px;
+            height: 100px;
+            background: #f8f9fa;
+            border: 3px solid #ddd;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+            transition: all 0.3s;
+        }
+
+        .letter-slot.filled {
+            background: #e8f5e9;
+            border-color: #4caf50;
+            transform: scale(1.05);
+        }
+
+        .letter-slot.blend {
+            background: #fff3e0;
+            border-color: #ff9800;
+        }
+
+        .letter-choices {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 25px;
+        }
+
+        .letter-tile {
+            width: 70px;
+            height: 90px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            user-select: none;
+        }
+
+        .letter-tile:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+
+        .letter-tile:active {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .letter-tile.used {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .btn {
+            padding: 15px 35px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .btn-check {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .btn-check:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn-clear {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);
+            color: white;
+        }
+
+        .btn-clear:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-next:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+
+        .feedback {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+            min-height: 40px;
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .feedback.correct {
+            color: #4caf50;
+            background: #e8f5e9;
+        }
+
+        .feedback.incorrect {
+            color: #f44336;
+            background: #ffebee;
+        }
+
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #f39c12;
+            animation: confetti-fall 3s linear;
+        }
+
+        @keyframes confetti-fall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .level-complete {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+            text-align: center;
+            z-index: 1001;
+            transition: transform 0.3s;
+        }
+
+        .level-complete.show {
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .level-complete h2 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        .level-complete .stars {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .letter-tile {
+                width: 60px;
+                height: 80px;
+                font-size: 2em;
+            }
+            
+            .letter-slot {
+                width: 65px;
+                height: 85px;
+                font-size: 2.5em;
+            }
+            
+            .btn {
+                padding: 12px 25px;
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>🌟 Blend Builder Adventure 🌟</h1>
+            <p>Build words with consonant blends!</p>
+        </div>
+
+        <div class="score-board">
+            <div class="score-item">
+                <div class="score-label">Level</div>
+                <div class="score-value" id="level">1</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Score</div>
+                <div class="score-value" id="score">0</div>
+            </div>
+            <div class="score-item">
+                <div class="score-label">Stars</div>
+                <div class="stars" id="stars">⭐⭐⭐</div>
+            </div>
+        </div>
+
+        <div class="challenge-area">
+            <div class="challenge-text" id="challenge-text">Build the word for this picture:</div>
+            <div class="target-image" id="target-image">🐸</div>
+        </div>
+
+        <div class="word-builder" id="word-builder">
+            <!-- Letter slots will be added here -->
+        </div>
+
+        <div class="letter-choices" id="letter-choices">
+            <!-- Letter tiles will be added here -->
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-clear" id="clear-btn" onclick="clearWord()">Clear</button>
+            <button class="btn btn-check" id="check-btn" onclick="checkWord()">Check Word!</button>
+        </div>
+
+        <div class="feedback" id="feedback"></div>
+    </div>
+
+    <div class="celebration" id="celebration"></div>
+
+    <script>
+        // Game data with consonant blends
+        const words = [
+            // Level 1: Initial blends with -og, -op, -an
+            { word: 'frog', emoji: '🐸', blend: 'fr', hint: 'Starts with FR' },
+            { word: 'stop', emoji: '🛑', blend: 'st', hint: 'Starts with ST' },
+            { word: 'plan', emoji: '📋', blend: 'pl', hint: 'Starts with PL' },
+            { word: 'crab', emoji: '🦀', blend: 'cr', hint: 'Starts with CR' },
+            { word: 'flag', emoji: '🚩', blend: 'fl', hint: 'Starts with FL' },
+            
+            // Level 2: More blends
+            { word: 'slip', emoji: '🧊', blend: 'sl', hint: 'Starts with SL' },
+            { word: 'drip', emoji: '💧', blend: 'dr', hint: 'Starts with DR' },
+            { word: 'snap', emoji: '👆', blend: 'sn', hint: 'Starts with SN' },
+            { word: 'clap', emoji: '👏', blend: 'cl', hint: 'Starts with CL' },
+            { word: 'swim', emoji: '🏊', blend: 'sw', hint: 'Starts with SW' },
+            
+            // Level 3: Trickier blends
+            { word: 'spin', emoji: '🌀', blend: 'sp', hint: 'Starts with SP' },
+            { word: 'glad', emoji: '😊', blend: 'gl', hint: 'Starts with GL' },
+            { word: 'tree', emoji: '🌳', blend: 'tr', hint: 'Starts with TR' },
+            { word: 'brag', emoji: '💪', blend: 'br', hint: 'Starts with BR' },
+            { word: 'grab', emoji: '✊', blend: 'gr', hint: 'Starts with GR' }
+        ];
+
+        let currentWordIndex = 0;
+        let currentWord = [];
+        let score = 0;
+        let level = 1;
+        let attempts = 3;
+
+        function initGame() {
+            loadWord();
+            updateScore();
+        }
+
+        function loadWord() {
+            const wordData = words[currentWordIndex];
+            document.getElementById('target-image').textContent = wordData.emoji;
+            document.getElementById('challenge-text').textContent = `Build the word for this picture! ${wordData.hint}`;
+            
+            // Create letter slots
+            const wordBuilder = document.getElementById('word-builder');
+            wordBuilder.innerHTML = '';
+            currentWord = new Array(wordData.word.length).fill('');
+            
+            for (let i = 0; i < wordData.word.length; i++) {
+                const slot = document.createElement('div');
+                slot.className = 'letter-slot';
+                if (i < wordData.blend.length) {
+                    slot.classList.add('blend');
+                }
+                slot.id = `slot-${i}`;
+                wordBuilder.appendChild(slot);
+            }
+            
+            // Create letter tiles
+            generateLetterTiles(wordData);
+            
+            // Clear feedback
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('feedback').className = 'feedback';
+        }
+
+        function generateLetterTiles(wordData) {
+            const letterChoices = document.getElementById('letter-choices');
+            letterChoices.innerHTML = '';
+            
+            // Get letters from the word
+            const wordLetters = wordData.word.split('');
+            
+            // Add some extra letters to make it challenging but not too hard
+            const extraLetters = ['a', 'e', 'i', 'o', 'u', 'b', 'd', 'g', 'k', 'm', 'n', 'p', 't', 'x'];
+            const availableLetters = [...wordLetters];
+            
+            // Add 3-4 random extra letters
+            for (let i = 0; i < 4; i++) {
+                const randomLetter = extraLetters[Math.floor(Math.random() * extraLetters.length)];
+                if (!availableLetters.includes(randomLetter)) {
+                    availableLetters.push(randomLetter);
+                }
+            }
+            
+            // Shuffle letters
+            availableLetters.sort(() => Math.random() - 0.5);
+            
+            // Create tiles
+            availableLetters.forEach((letter, index) => {
+                const tile = document.createElement('div');
+                tile.className = 'letter-tile';
+                tile.textContent = letter;
+                tile.id = `tile-${index}`;
+                tile.onclick = () => addLetter(letter, index);
+                letterChoices.appendChild(tile);
+            });
+        }
+
+        function addLetter(letter, tileIndex) {
+            // Find first empty slot
+            const emptyIndex = currentWord.findIndex(l => l === '');
+            if (emptyIndex !== -1) {
+                currentWord[emptyIndex] = letter;
+                const slot = document.getElementById(`slot-${emptyIndex}`);
+                slot.textContent = letter;
+                slot.classList.add('filled');
+                
+                // Mark tile as used
+                const tile = document.getElementById(`tile-${tileIndex}`);
+                tile.classList.add('used');
+                
+                // Play sound effect (if you want to add audio later)
+            }
+        }
+
+        function clearWord() {
+            currentWord = currentWord.map(() => '');
+            const slots = document.querySelectorAll('.letter-slot');
+            slots.forEach(slot => {
+                slot.textContent = '';
+                slot.classList.remove('filled');
+            });
+            
+            const tiles = document.querySelectorAll('.letter-tile');
+            tiles.forEach(tile => {
+                tile.classList.remove('used');
+            });
+            
+            document.getElementById('feedback').textContent = '';
+            document.getElementById('feedback').className = 'feedback';
+        }
+
+        function checkWord() {
+            const wordData = words[currentWordIndex];
+            const builtWord = currentWord.join('');
+            const feedback = document.getElementById('feedback');
+            
+            if (builtWord === wordData.word) {
+                // Correct!
+                feedback.textContent = `🎉 Amazing! "${wordData.word}" is correct!`;
+                feedback.className = 'feedback correct';
+                score += 10;
+                attempts = 3;
+                
+                // Celebration
+                celebrate();
+                
+                // Move to next word after delay
+                setTimeout(() => {
+                    currentWordIndex++;
+                    if (currentWordIndex >= words.length) {
+                        showLevelComplete();
+                    } else {
+                        if (currentWordIndex % 5 === 0) {
+                            level++;
+                        }
+                        updateScore();
+                        loadWord();
+                    }
+                }, 2000);
+            } else {
+                // Incorrect
+                attempts--;
+                if (attempts > 0) {
+                    feedback.textContent = `Not quite! Try again. You have ${attempts} ${attempts === 1 ? 'try' : 'tries'} left.`;
+                    feedback.className = 'feedback incorrect';
+                } else {
+                    feedback.textContent = `The word was "${wordData.word}". Let's try the next one!`;
+                    feedback.className = 'feedback incorrect';
+                    attempts = 3;
+                    
+                    setTimeout(() => {
+                        currentWordIndex++;
+                        if (currentWordIndex >= words.length) {
+                            showLevelComplete();
+                        } else {
+                            updateScore();
+                            loadWord();
+                        }
+                    }, 3000);
+                }
+            }
+            
+            updateScore();
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+            document.getElementById('level').textContent = level;
+            
+            // Update stars based on attempts
+            let starDisplay = '';
+            for (let i = 0; i < attempts; i++) {
+                starDisplay += '⭐';
+            }
+            document.getElementById('stars').textContent = starDisplay || '💫';
+        }
+
+        function celebrate() {
+            const celebration = document.getElementById('celebration');
+            
+            // Create confetti
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.left = Math.random() * 100 + '%';
+                confetti.style.background = ['#f39c12', '#e74c3c', '#3498db', '#2ecc71', '#9b59b6'][Math.floor(Math.random() * 5)];
+                confetti.style.animationDelay = Math.random() * 0.3 + 's';
+                celebration.appendChild(confetti);
+                
+                setTimeout(() => confetti.remove(), 3000);
+            }
+        }
+
+        function showLevelComplete() {
+            const completeDiv = document.createElement('div');
+            completeDiv.className = 'level-complete';
+            completeDiv.innerHTML = `
+                <h2>🎊 Congratulations! 🎊</h2>
+                <div class="stars">⭐⭐⭐⭐⭐</div>
+                <p style="font-size: 1.5em; margin-bottom: 20px;">You completed all the words!</p>
+                <p style="font-size: 1.2em; margin-bottom: 20px;">Final Score: ${score}</p>
+                <button class="btn btn-next" onclick="restartGame()">Play Again!</button>
+            `;
+            document.body.appendChild(completeDiv);
+            
+            setTimeout(() => {
+                completeDiv.classList.add('show');
+            }, 100);
+            
+            celebrate();
+        }
+
+        function restartGame() {
+            currentWordIndex = 0;
+            score = 0;
+            level = 1;
+            attempts = 3;
+            
+            const levelComplete = document.querySelector('.level-complete');
+            if (levelComplete) {
+                levelComplete.remove();
+            }
+            
+            initGame();
+        }
+
+        // Start the game
+        initGame();
+    </script>
+</body>
+</html>
