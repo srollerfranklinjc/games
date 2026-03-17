@@ -324,10 +324,12 @@
     <div class="celebration" id="celebration"></div>
 
     <script>
-        // Kindergarten and Grade 1 sight words
+        // Kindergarten through Grade 3 sight words (Dolch list)
         const sightWords = {
             kindergarten: ['the', 'and', 'a', 'to', 'said', 'you', 'I', 'of', 'in', 'was', 'is', 'he', 'for', 'it', 'with', 'as', 'his', 'on', 'be', 'at', 'by', 'we', 'can', 'see', 'like', 'go', 'do', 'my', 'are', 'me'],
-            grade1: ['they', 'were', 'have', 'what', 'when', 'your', 'there', 'use', 'each', 'which', 'she', 'how', 'their', 'if', 'will', 'up', 'other', 'about', 'out', 'many', 'then', 'them', 'these', 'so', 'some', 'her', 'would', 'make', 'him']
+            grade1: ['they', 'were', 'have', 'what', 'when', 'your', 'there', 'use', 'each', 'which', 'she', 'how', 'their', 'if', 'will', 'up', 'other', 'about', 'out', 'many', 'then', 'them', 'these', 'so', 'some', 'her', 'would', 'make', 'him'],
+            grade2: ['always', 'around', 'because', 'been', 'before', 'best', 'both', 'buy', 'call', 'cold', 'does', "don't", 'fast', 'first', 'five', 'found', 'gave', 'goes', 'its', 'made', 'off', 'or', 'pull', 'read', 'right', 'sing', 'sit', 'sleep', 'tell', 'those', 'upon', 'us', 'very', 'wash', 'why', 'wish', 'work', 'write'],
+            grade3: ['better', 'bring', 'carry', 'clean', 'cut', 'done', 'draw', 'drink', 'eight', 'fall', 'far', 'full', 'got', 'grow', 'hold', 'hot', 'hurt', 'keep', 'kind', 'laugh', 'light', 'long', 'much', 'myself', 'never', 'only', 'own', 'pick', 'seven', 'shall', 'show', 'six', 'small', 'start', 'ten', 'today', 'together', 'try', 'warm']
         };
 
         const animals = ['🦁', '🐯', '🐻', '🐼', '🐨', '🦊', '🐸', '🐵', '🦓', '🦒', '🐘', '🦏', '🦘', '🦙', '🐫', '🦌', '🐆', '🦝'];
@@ -349,13 +351,18 @@
                 return;
             }
 
-            // Get available words
-            let availableWords = [...sightWords.kindergarten, ...sightWords.grade1];
-            availableWords = availableWords.filter(word => !usedWords.has(word));
-            
+            // Progressively introduce harder words as rounds advance
+            // Rounds 1-7: Kindergarten, 8-13: +Grade 1, 14-17: +Grade 2, 18-20: +Grade 3
+            let wordPool = [...sightWords.kindergarten];
+            if (currentRound >= 8)  wordPool = wordPool.concat(sightWords.grade1);
+            if (currentRound >= 14) wordPool = wordPool.concat(sightWords.grade2);
+            if (currentRound >= 18) wordPool = wordPool.concat(sightWords.grade3);
+
+            let availableWords = wordPool.filter(word => !usedWords.has(word));
+
             if (availableWords.length < 4) {
                 usedWords.clear();
-                availableWords = [...sightWords.kindergarten, ...sightWords.grade1];
+                availableWords = [...wordPool];
             }
 
             // Select target word
