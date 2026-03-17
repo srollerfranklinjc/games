@@ -630,18 +630,21 @@
         }
 
         function showWorldComplete() {
+            const completedWorld = worlds[currentWorld];
             currentWorld++;
-            const world = worlds[currentWorld];
-            
+            const world = currentWorld < worlds.length ? worlds[currentWorld] : null;
+
             const completeDiv = document.createElement('div');
             completeDiv.className = 'world-complete';
             completeDiv.innerHTML = `
                 <h2>🎊 World Complete! 🎊</h2>
-                <div style="font-size: 5em; margin: 20px 0;">${worlds[currentWorld - 1].icon}</div>
+                <div style="font-size: 5em; margin: 20px 0;">${completedWorld.icon}</div>
                 <div style="font-size: 3em; margin-bottom: 20px;">⭐⭐⭐</div>
+                ${world ? `
                 <p style="font-size: 1.8em; margin-bottom: 15px;">You've unlocked:</p>
                 <div style="font-size: 4em; margin-bottom: 15px;">${world.icon}</div>
                 <p style="font-size: 1.5em; font-weight: bold; color: ${world.color}; margin-bottom: 25px;">${world.name}</p>
+                ` : ''}
                 <button class="btn-continue" onclick="continueQuest()">Continue Quest! →</button>
             `;
             document.body.appendChild(completeDiv);

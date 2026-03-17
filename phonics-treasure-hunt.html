@@ -592,7 +592,9 @@
                 }
             } else {
                 card.classList.add('incorrect');
-                feedback.textContent = `Not quite! "${card.querySelector('.picture-label').textContent}" doesn't match the ${document.getElementById('word-family').textContent} family.`;
+                const pictureLabel = card.querySelector('.picture-label');
+                const wordLabel = pictureLabel ? pictureLabel.textContent : 'That word';
+                feedback.textContent = `Not quite! "${wordLabel}" doesn't match the ${document.getElementById('word-family').textContent} family.`;
                 feedback.className = 'feedback incorrect';
 
                 setTimeout(() => {

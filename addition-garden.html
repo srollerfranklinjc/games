@@ -457,14 +457,18 @@
             const choices = document.getElementById('answer-choices');
             choices.innerHTML = '';
 
-            // Generate wrong answers
+            // Generate wrong answers from nearby values within [0, 10]
             const wrongAnswers = new Set();
-            while (wrongAnswers.size < 3) {
-                let wrong = correctAnswer + (Math.random() > 0.5 ? 1 : -1) * (Math.floor(Math.random() * 3) + 1);
-                if (wrong !== correctAnswer && wrong >= 0 && wrong <= 10) {
-                    wrongAnswers.add(wrong);
-                }
+            const candidates = [];
+            for (let i = 0; i <= 10; i++) {
+                if (i !== correctAnswer) candidates.push(i);
             }
+            // Shuffle candidates and pick up to 3
+            for (let i = candidates.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
+            }
+            candidates.slice(0, 3).forEach(v => wrongAnswers.add(v));
 
             // Combine and shuffle
             const allAnswers = [correctAnswer, ...Array.from(wrongAnswers)];
